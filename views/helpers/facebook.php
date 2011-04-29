@@ -381,9 +381,14 @@ class FacebookHelper extends AppHelper {
  * @example $this->Facebook->init();
  * @return string of scriptBlock for FB.init() or error
  */
-	public function init($options = array()) {
+	public function init($options = array(), $reload = true) {
 		if ($appId = FacebookInfo::getConfig('appId')) {
 			$session = json_encode($this->Session->read('FB.Session'));
+			if ($reload) {
+				$callback = "FB.Event.subscribe('auth.login',function(){window.location.reload()});";
+			} else {
+				$callback = "if(typeof(facebookReady)=='function'){facebookReady()}";
+			}
 			$init = '<div id="fb-root"></div>';
 			$init .= $this->Html->scriptBlock(
 <<<JS
@@ -395,10 +400,7 @@ window.fbAsyncInit = function() {
 		cookie : true, // enable cookies to allow the server to access the session
 		xfbml : true // parse XFBML
 	});
-	// whenever the user logs in, we refresh the page
-	FB.Event.subscribe('auth.login', function() {
-		window.location.reload();
-	});
+	{$callback}
 };
 (function() {
 	var e = document.createElement('script');

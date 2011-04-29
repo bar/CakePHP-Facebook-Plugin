@@ -207,10 +207,7 @@ window.fbAsyncInit = function() {
 		cookie : true, // enable cookies to allow the server to access the session
 		xfbml : true // parse XFBML
 	});
-	// whenever the user logs in, we refresh the page
-	FB.Event.subscribe('auth.login', function() {
-		window.location.reload();
-	});
+	FB.Event.subscribe('auth.login',function(){window.location.reload()});
 };
 (function() {
 	var e = document.createElement('script');
@@ -221,6 +218,30 @@ window.fbAsyncInit = function() {
 //]]>
 </script>";
 		$this->assertEqual($expected, $results);
+
+		$results = $this->Facebook->init(array(), false);
+		$expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
+//<![CDATA[
+window.fbAsyncInit = function() {
+	FB.init({
+		appId : '12345678',
+		session : \"4567\", // don't refetch the session when PHP already has it
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml : true // parse XFBML
+	});
+	if(typeof(facebookReady)=='function'){facebookReady()}
+};
+(function() {
+	var e = document.createElement('script');
+	e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+}());
+//]]>
+</script>";
+		$this->assertEqual($expected, $results);
+
 		$this->Facebook->locale = $locale;
 	}
 
