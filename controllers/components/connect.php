@@ -12,44 +12,44 @@
 */
 App::import('Lib', 'Facebook.FB');
 class ConnectComponent extends Object {
-	
+
 	/**
 	* uid is the Facebook ID of the connected Facebook user, or null if not connected
 	*/
 	var $uid = null;
-	
+
 	/**
 	* me is the Facebook user object for the connected Facebook user
 	*/
 	var $me = null;
-	
+
 	/**
 	* hasAccount is true if the connected Facebook user has an account in your application
 	*/
 	var $hasAccount = false;
-	
+
 	/**
 	* The authenticated User using Auth
 	*/
 	var $authUser = null;
-	
+
 	/**
 	* No Auth, if set to true, syncFacebookUser will NOT be called
 	*/
 	var $noAuth = false;
-	
+
 	/**
 	* Error log
 	*/
 	var $errors = array();
-	
+
 	/**
 	* createUser is true you want the component to attempt to create a CakePHP Auth user
 	* account by introspection on the Auth component.  If false, you can use $this->hasAccount
 	* as a reference to decide what to do with that user. (default true)
 	*/
 	var $createUser = true;
-	
+
 	/**
 	* Initialize, load the api, decide if we're logged in
 	* Sync the connected Facebook user with your application
@@ -68,7 +68,7 @@ class ConnectComponent extends Object {
 			$this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
 		}
 	}
-	
+
 	/**
 	* Sync the connected Facebook user
 	* @return boolean true if successful, false otherwise
@@ -88,9 +88,9 @@ class ConnectComponent extends Object {
 			$this->__error("Facebook.Connect handleFacebookUser Error.  facebook_id not found in {$Auth->userModel} table.");
 			return false;
 		}
-		
+
 		// check if the user already has an account
-		// User is logged in but doesn't have a 
+		// User is logged in but doesn't have a
 		if($Auth->user()){
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
@@ -98,11 +98,11 @@ class ConnectComponent extends Object {
 				$this->User->saveField('facebook_id', $this->session['uid']);
 			}
 			return true;
-		} 
+		}
 		else {
 			// attempt to find the user by their facebook id
 			$this->authUser = $this->User->findByFacebookId($this->session['uid']);
-			
+
 			//if we have a user, set hasAccount
 			if(!empty($this->authUser)){
 				$this->hasAccount = true;
@@ -121,7 +121,7 @@ class ConnectComponent extends Object {
 			//Login user if we have one
 			if($this->authUser){
 				$this->__runCallback('beforeFacebookLogin', $this->authUser);
-				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);    		
+				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);
 				if($Auth->login($this->authUser)){
 					$this->__runCallback('afterFacebookLogin');
 				}
@@ -129,7 +129,7 @@ class ConnectComponent extends Object {
 			return true;
 		}
 	}
-	
+
 	/**
 	* Read the logged in user
 	* @param field key to return (xpath without leading slash)
@@ -142,36 +142,36 @@ class ConnectComponent extends Object {
 				$this->Controller->Session->write('FB.Me', $this->FB->api('/me'));
 			}
 			$this->me = $this->Controller->Session->read('FB.Me');
-		} 
+		}
 		else {
 			$this->Controller->Session->delete('FB');
 		}
-		
+
 		if(!$this->me){
 			return null;
 		}
-		
+
 		if($field){
 			$retval = Set::extract("/$field", $this->me);
 			return empty($retval) ? null : $retval[0];
 		}
-		
+
 		return $this->me;
 	}
-	
+
 	/**
 	* Run the callback if it exists
 	* @param string callback
 	* @param mixed passed in variable (optional)
 	* @return mixed result of the callback function
-	*/ 
+	*/
 	function __runCallback($callback, $passedIn = null){
 		if(is_callable(array($this->Controller, $callback))){
 			return call_user_func_array(array($this->Controller, $callback), array($passedIn));
 		}
 		return true;
 	}
-	
+
 	/**
 	* Initialize the actual User model object defined by Auth
 	* @return true if successful
@@ -185,7 +185,7 @@ class ConnectComponent extends Object {
 		}
 		return false;
 	}
-	
+
 	/**
 	* Handle errors.
 	* @param string of error message

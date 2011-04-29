@@ -15,7 +15,7 @@ class FB {
     * Facebook Api
     */
   public static $Facebook = null;
-  
+
   public function __construct() {
     if(!self::$Facebook){
       FacebookInfo::getConfig();
@@ -24,7 +24,7 @@ class FB {
       );
     }
   }
-  
+
   /**
     * Forward any call to the Facebook API
     * @param string method name
@@ -38,7 +38,7 @@ class FB {
 	    error_log($e);
 	  }
   }
-  
+
   /**
     * Retrieve the property of the Facebook API
     * @param string name of property
@@ -47,10 +47,10 @@ class FB {
   public function __get($name){
     return self::$Facebook->$name;
   }
-  
+
   /**
     * PHP 5.3.0 only
-    * Usage: 
+    * Usage:
     * - FB::method(params);
     * Example:
     * - FB::getUser();

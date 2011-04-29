@@ -9,31 +9,32 @@
 */
 App::import('Lib', 'Facebook.FacebookInfo');
 class FacebookHelper extends AppHelper {
+
 	/**
 	* Helpers to load with this helper.
 	*/
 	var $helpers = array('Html', 'Session');
-	
+
 	/**
 	* Default Facebook.Share javascript URL
 	* @access private
 	*/
 	var $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
-	
+
 	/**
 	* locale, settable in the constructor
 	* @link http://developers.facebook.com/docs/internationalization/
 	* @access public
 	*/
 	var $locale = null;
-	
+
 	/**
 	* Loadable construct, pass in locale settings
 	* Fail safe locale to 'en_US'
 	*/
 	function __construct($settings = array()){
 		$this->_set($settings);
-		
+
 		if(!$this->locale){
 			$this->locale = FacebookInfo::getConfig('locale');
 		}
@@ -42,7 +43,7 @@ class FacebookHelper extends AppHelper {
 		}
 		parent::__construct();
 	}
-	
+
 	/**
 	* Get the info on this plugin
 	* @param string name to retrieve (default 'version')
@@ -54,14 +55,14 @@ class FacebookHelper extends AppHelper {
 	* @return string plugin version
 	*/
 	function info($name = 'version'){
-		if(FacebookInfo::_isAvailable($name)){ 
+		if(FacebookInfo::_isAvailable($name)){
 			return FacebookInfo::$name();
 		}
 		else {
 			return "$name is not an available option";
 		}
 	}
-	
+
 	/**
 	* Loaoder is no longer needed and is now deprecated
 	* @return null
@@ -69,7 +70,7 @@ class FacebookHelper extends AppHelper {
 	function loader(){
 		return null;
 	}
-	
+
 	/**
 	* HTML XMLNS tag (required)
 	* @return string of html header
@@ -78,7 +79,7 @@ class FacebookHelper extends AppHelper {
 	function html(){
 		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">';
 	}
-	
+
 	/**
 	* Login Button
 	* $this->Facebook->init() is required for this
@@ -93,8 +94,8 @@ class FacebookHelper extends AppHelper {
 	function login($options = array()){
 		return $this->__fbTag('fb:login-button', '', $options);
 	}
-	
-	
+
+
 	/**
 	* Logout Button
 	* $this->Facebook->init() is required for this
@@ -109,10 +110,10 @@ class FacebookHelper extends AppHelper {
 	function logout($options = array()){
 		$options = array_merge(
 			array(
-				'autologoutlink' => 'true', 
+				'autologoutlink' => 'true',
 				'label' => 'logout',
 				'custom' => false
-			), 
+			),
 			$options
 		);
 		if(isset($options['redirect']) || $options['custom']){
@@ -132,7 +133,7 @@ class FacebookHelper extends AppHelper {
 			return $this->__fbTag('fb:login-button', '', $options);
 		}
 	}
-	
+
 	/**
 	* Unsubscribe Button - Function which creates link for disconnecting user from the specific application
 	* $this->Facebook->init() is required for this
@@ -147,7 +148,7 @@ class FacebookHelper extends AppHelper {
 		$options = array_merge(
 			array(
 				'label' => 'logout'
-			), 
+			),
 			$options
 		);
 		if(isset($options['redirect']) && $options['redirect']){
@@ -162,10 +163,10 @@ class FacebookHelper extends AppHelper {
 		}
 		return $this->Html->link($options['label'], '#', array('onclick' => $onclick));
 	}
-	
+
 	/**
 	* Share this page
-	* @param string url: url to share with facebook (default current page) 
+	* @param string url: url to share with facebook (default current page)
 	* @param array options to pass into share
 	* - style: 'button' or 'link' (default'button')
 	* - label: title of text to link(default 'share')
@@ -184,14 +185,14 @@ class FacebookHelper extends AppHelper {
 			'fbxml' => false
 		);
 		$options = array_merge($defaults, $options);
-		
+
 		if(!$options['fbxml']){
 			switch($options['style']){
 			case 'link': $options['type'] = 'icon_link'; break;
 				default: $options['type'] = 'button'; break;
 			}
 		}
-		
+
 		if($options['fbxml']){
 			unset($options['fbxml']);
 			$retval = $this->__fbTag('fb:share-button','',$options);
@@ -200,10 +201,10 @@ class FacebookHelper extends AppHelper {
 			$retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
 			$retval .= $this->Html->script($this->__fbShareScript);
 		}
-		
+
 		return $retval;
 	}
-	
+
 	/**
 	* Profile Picture of Facebook User
 	* $facebook->init() is required for this
@@ -212,8 +213,8 @@ class FacebookHelper extends AppHelper {
 	* - uid : user_id to view profile picture
 	* - size : size of the picture represented as a string. 'thumb','small','normal','square' (default thumb)
 	* - facebook-logo: (default true)
-	* - width: width of the picture in pixels 
-	* - height: height of the picture in pixels 
+	* - width: width of the picture in pixels
+	* - height: height of the picture in pixels
 	* @return string fb tag for profile picture or empty string if uid is not present
 	* @access public
 	*/
@@ -232,7 +233,7 @@ class FacebookHelper extends AppHelper {
 			return "";
 		}
 	}
-	
+
 	/**
 	* Build a like box
 	* $facebook->init() is required for this
@@ -257,7 +258,7 @@ class FacebookHelper extends AppHelper {
 		);
 		return $this->__fbTag('fb:like-box', '', $options);
 	}
-	
+
 	/**
 	* Build a become a fan, fanbox
 	* $facebook->init() is required for this
@@ -273,15 +274,15 @@ class FacebookHelper extends AppHelper {
 		$options = array_merge(
 			array(
 				'profile_id' => FacebookInfo::getConfig('appId'),
-				'stream' => 0, 
-				'logobar' => 0, 
+				'stream' => 0,
+				'logobar' => 0,
 				'connections' => 0,
 			),
 			$options
 		);
 		return $this->__fbTag('fb:fan', '', $options);
 	}
-	
+
 	/**
 	* Build a livestream window to your live stream app on facebook
 	* $facebook->init() is required for this
@@ -305,7 +306,7 @@ class FacebookHelper extends AppHelper {
 		);
 		return $this->__fbTag('fb:live-stream','',$options);
 	}
-	
+
 	/**
 	* Build a facebook comments area.
 	* $facebook->init() is required for this
@@ -318,7 +319,7 @@ class FacebookHelper extends AppHelper {
 	function comments($options = array()){
 		return $this->__fbTag('fb:comments', '', $options);
 	}
-	
+
 	/**
 	* Build a facebook recommendations area.
 	* $facebook->init() is required for this
@@ -335,7 +336,7 @@ class FacebookHelper extends AppHelper {
 	function recommendations($options = array()){
 		return $this->__fbTag('fb:recommendations', '', $options);
 	}
-	
+
 	/**
 	* Build a facebook friendpile area.
 	* $facebook->init() is required for this
@@ -348,7 +349,7 @@ class FacebookHelper extends AppHelper {
 	function friendpile($options = array()){
 		return $this->__fbTag('fb:friendpile', '', $options);
 	}
-	
+
 	/**
 	* Build a facebook activity feed area.
 	* $facebook->init() is required for this
@@ -366,7 +367,7 @@ class FacebookHelper extends AppHelper {
 	function activity($options = array()){
 		return $this->__fbTag('fb:activity', '', $options);
 	}
-	
+
 	/**
 	* Build a facebook like box
 	* $facebook->init() is required for this
@@ -383,7 +384,7 @@ class FacebookHelper extends AppHelper {
 	function like($options = array()){
 		return $this->__fbTag('fb:like', '', $options);
 	}
-	
+
 	/**
 	* HTML XMLNS tag (required)
 	* @param array of options
@@ -424,9 +425,9 @@ class FacebookHelper extends AppHelper {
 		}
 		else {
 			return "<span class='error'>No Facebook configuration detected. Please add the facebook configuration file to your config folder.</span>";
-		} 
+		}
 	}
-	
+
 	/**
 	* Generate a facebook tag
 	* @param string fb:tag
@@ -444,5 +445,5 @@ class FacebookHelper extends AppHelper {
 		$retval .= ">$label</$tag>";
 		return $retval;
 	}
-	
+
 }

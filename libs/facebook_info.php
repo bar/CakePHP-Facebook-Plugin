@@ -4,7 +4,7 @@
   * versioning information
   */
 class FacebookInfo {
-  
+
   /**
     * Available options to call
     */
@@ -17,14 +17,14 @@ class FacebookInfo {
       'description',
       'license',
     );
-  
+
   /**
     * Facebook configurations stored in
     * app/config/facebook.php
     * @var array
     */
   public static $configs = array();
-  
+
   /**
     * Testing getting a configuration option.
     * @param key to search for
@@ -45,10 +45,10 @@ class FacebookInfo {
     if(self::$configs[$key] = Configure::read("Facebook.$key")){
       return self::$configs[$key];
     }
-    
+
     return null;
   }
-  
+
   /**
     * Get the version of the Facebook Plugin
     * @return string version number
@@ -56,7 +56,7 @@ class FacebookInfo {
   static function version(){
     return '2.4.3';
   }
-  
+
   /**
     * Get the offical name of the Facebook Plugin
     * @return string plugin name
@@ -64,7 +64,7 @@ class FacebookInfo {
   static function name(){
     return 'CakePHP Facebook Plugin';
   }
-  
+
   /**
     * Get the name of the author
     * @return string plugin author
@@ -72,7 +72,7 @@ class FacebookInfo {
   static function author(){
     return 'Nick Baker';
   }
-  
+
   /**
     * Get the support email
     * @return string plugin support email
@@ -80,7 +80,7 @@ class FacebookInfo {
   static function email(){
     return 'nick@webtechnick.com';
   }
-  
+
   /**
     * Get the website for Facebook Plugin
     * @return string plugin link
@@ -88,7 +88,7 @@ class FacebookInfo {
   static function link(){
     return 'http://www.webtechnick.com';
   }
-  
+
   /**
     * Get the license for Facebook Plugin
     * @return string plugin license
@@ -96,7 +96,7 @@ class FacebookInfo {
   static function license(){
     return 'MIT';
   }
-  
+
   /**
     * Get the description for Facebook Plugin
     * @return string plugin description
@@ -104,14 +104,14 @@ class FacebookInfo {
   static function description(){
     return "The purpose of the Facebook plugin is to provide a seamless way to connect your cakePHP app to everyone's favorite social networking site -- Facebook. The goal for this plugin is to not only provide extremely useful dynamic features but to also provide a complete interface to the Facebook API.";
   }
-  
+
   /**
     * Get the available options list
     */
   static function getOptions(){
     return self::$options;
   }
-  
+
   /**
   	* Random strong string password generator
   	* @param int length
@@ -120,7 +120,7 @@ class FacebookInfo {
   static function randPass($length = 8){
   	return substr(md5(rand().rand()), 0, $length);
   }
-  
+
   /**
     * Utility method to test if this is available key.
     */
