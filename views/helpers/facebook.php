@@ -382,8 +382,7 @@ class FacebookHelper extends AppHelper {
  * @return string of scriptBlock for FB.init() or error
  */
 	public function init($options = array()) {
-		if (FacebookInfo::getConfig('appId')) {
-			$appId = FacebookInfo::getConfig('appId');
+		if ($appId = FacebookInfo::getConfig('appId')) {
 			$session = json_encode($this->Session->read('FB.Session'));
 			$init = '<div id="fb-root"></div>';
 			$init .= $this->Html->scriptBlock(

@@ -130,17 +130,17 @@ class FacebookHelperTest extends CakeTestCase {
 	}
 
 	public function testPicture() {
-		$results = $this->Facebook->picture('12345');
-		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='1'></fb:profile-pic>", $results);
+		$results = $this->Facebook->picture('123456');
+		$this->assertEqual("<fb:profile-pic uid='123456' facebook-logo='1'></fb:profile-pic>", $results);
 
-		$results = $this->Facebook->picture('12345', array('size' => 'small'));
-		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='1' size='small'></fb:profile-pic>", $results);
+		$results = $this->Facebook->picture('123457', array('size' => 'small'));
+		$this->assertEqual("<fb:profile-pic uid='123457' facebook-logo='1' size='small'></fb:profile-pic>", $results);
 
-		$results = $this->Facebook->picture('12345', array('width' => '150', 'height' => '150'));
-		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='1' width='150' height='150'></fb:profile-pic>", $results);
+		$results = $this->Facebook->picture('123458', array('width' => '150', 'height' => '150'));
+		$this->assertEqual("<fb:profile-pic uid='123458' facebook-logo='1' width='150' height='150'></fb:profile-pic>", $results);
 
-		$results = $this->Facebook->picture('12345', array('facebook-logo' => false));
-		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='0'></fb:profile-pic>", $results);
+		$results = $this->Facebook->picture('123459', array('facebook-logo' => false));
+		$this->assertEqual("<fb:profile-pic uid='123459' facebook-logo='0'></fb:profile-pic>", $results);
 	}
 
 	public function testLike() {
@@ -176,13 +176,13 @@ class FacebookHelperTest extends CakeTestCase {
 	}
 
 	public function testLivestream() {
-		Configure::write('Facebook.appId', '12345');
+		Configure::write('Facebook.appId', '1234567');
 
 		$results = $this->Facebook->livestream();
-		$this->assertEqual("<fb:live-stream event_app_id='12345' xid='YOUR_EVENT_XID' width='300' height='500'></fb:live-stream>", $results);
+		$this->assertEqual("<fb:live-stream event_app_id='1234567' xid='YOUR_EVENT_XID' width='300' height='500'></fb:live-stream>", $results);
 
 		$results = $this->Facebook->livestream(array('width' => '200', 'height' => '300'));
-		$this->assertEqual("<fb:live-stream event_app_id='12345' xid='YOUR_EVENT_XID' width='200' height='300'></fb:live-stream>", $results);
+		$this->assertEqual("<fb:live-stream event_app_id='1234567' xid='YOUR_EVENT_XID' width='200' height='300'></fb:live-stream>", $results);
 	}
 
 	public function testComments() {
@@ -191,14 +191,17 @@ class FacebookHelperTest extends CakeTestCase {
 	}
 
 	public function testInit() {
-		Configure::write('Facebook.appId', '12345');
+		Configure::write('Facebook.appId', '12345678');
 		$this->Facebook->Session->setReturnValue('read', '4567');
+		$locale = $this->Facebook->locale;
+		$this->Facebook->locale = 'en_US';
+
 		$results = $this->Facebook->init();
 		$expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
 //<![CDATA[
 window.fbAsyncInit = function() {
 	FB.init({
-		appId : '12345',
+		appId : '12345678',
 		session : \"4567\", // don't refetch the session when PHP already has it
 		status : true, // check login status
 		cookie : true, // enable cookies to allow the server to access the session
@@ -218,9 +221,11 @@ window.fbAsyncInit = function() {
 //]]>
 </script>";
 		$this->assertEqual($expected, $results);
+		$this->Facebook->locale = $locale;
 	}
 
 	public function endTest() {
 		unset($this->Facebook);
+		Configure::delete('Facebook');
 	}
 }
