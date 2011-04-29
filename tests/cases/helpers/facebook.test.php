@@ -5,20 +5,20 @@ App::import('Helper', 'Session');
 Mock::generate('SessionHelper');
 class FacebookHelperTest extends CakeTestCase {
 
-	var $Facebook = null;
+	public $Facebook = null;
 
-	function startTest() {
+	public function startTest() {
 		$this->Facebook = new FacebookHelper();
 		$this->Facebook->Html = new HtmlHelper();
 		$this->Facebook->Session = new MockSessionHelper();
 	}
 
-	function testLocale() {
+	public function testLocale() {
 		$this->Facebook->__construct(array('locale' => 'es_LA'));
 		$this->assertEqual('es_LA', $this->Facebook->locale);
 	}
 
-	function testDisconnect() {
+	public function testDisconnect() {
 		$results = $this->Facebook->disconnect();
 		$this->assertEqual('<a href="#" onclick="FB.api({ method: &#039;Auth.revokeAuthorization&#039; }, function(response) {window.location.reload();});">logout</a>', $results);
 
@@ -32,7 +32,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual('<a href="#" onclick="if(confirm(&quot;Are you sure?&quot;)){FB.api({ method: &#039;Auth.revokeAuthorization&#039; }, function(response) {window.location.reload();});}">logout</a>', $results);
 	}
 
-	function testInfo() {
+	public function testInfo() {
 		$error_text = " is not an available option";
 		$results = $this->Facebook->info();
 		$this->assertNotEqual('version' . $error_text, $results);
@@ -56,12 +56,12 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual('notvalid'. $error_text, $results);
 	}
 
-	function testHtml() {
+	public function testHtml() {
 		$results = $this->Facebook->html();
 		$this->assertTrue('<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">', $results);
 	}
 
-	function testLogin() {
+	public function testLogin() {
 		$results = $this->Facebook->login();
 		$this->assertEqual("<fb:login-button></fb:login-button>", $results);
 
@@ -78,7 +78,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:login-button onlogin='blah'></fb:login-button>", $results);
 	}
 
-	function testLogout() {
+	public function testLogout() {
 		$results = $this->Facebook->logout();
 		$this->assertEqual("<fb:login-button autologoutlink='true'></fb:login-button>", $results);
 
@@ -92,7 +92,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual('<a href="#" onclick="FB.logout(function(response){window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
 	}
 
-	function testShare() {
+	public function testShare() {
 		$this->Facebook->here = 'some_where';
 
 		$results = $this->Facebook->share();
@@ -109,7 +109,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="not_here" type="icon_link" name="fb_share">Click</a>', $results);
 	}
 
-	function testFanBox() {
+	public function testFanBox() {
 		Configure::write('Facebook.appId', '12345');
 
 		$results = $this->Facebook->fanbox();
@@ -128,7 +128,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:fan profile_id='789' stream='0' logobar='0' connections='0'></fb:fan>", $results);
 	}
 
-	function testPicture() {
+	public function testPicture() {
 		$results = $this->Facebook->picture('12345');
 		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='1'></fb:profile-pic>", $results);
 
@@ -142,7 +142,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:profile-pic uid='12345' facebook-logo='0'></fb:profile-pic>", $results);
 	}
 
-	function testLike() {
+	public function testLike() {
 		$results = $this->Facebook->like();
 		$this->assertEqual('<fb:like></fb:like>', $results);
 
@@ -150,7 +150,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:like layout='button_count'></fb:like>", $results);
 	}
 
-	function testActivity() {
+	public function testActivity() {
 		$results = $this->Facebook->activity();
 		$this->assertEqual('<fb:activity></fb:activity>', $results);
 
@@ -158,7 +158,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:activity colorscheme='dark'></fb:activity>", $results);
 	}
 
-	function testFriendPile() {
+	public function testFriendPile() {
 		$results = $this->Facebook->friendpile();
 		$this->assertEqual('<fb:friendpile></fb:friendpile>', $results);
 
@@ -166,7 +166,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:friendpile colorscheme='dark'></fb:friendpile>", $results);
 	}
 
-	function testRecommendantions() {
+	public function testRecommendantions() {
 		$results = $this->Facebook->recommendations();
 		$this->assertEqual('<fb:recommendations></fb:recommendations>', $results);
 
@@ -174,7 +174,7 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:recommendations colorscheme='dark'></fb:recommendations>", $results);
 	}
 
-	function testLivestream() {
+	public function testLivestream() {
 		Configure::write('Facebook.appId', '12345');
 
 		$results = $this->Facebook->livestream();
@@ -184,44 +184,42 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual("<fb:live-stream event_app_id='12345' xid='YOUR_EVENT_XID' width='200' height='300'></fb:live-stream>", $results);
 	}
 
-	function testComments() {
+	public function testComments() {
 		$results = $this->Facebook->comments();
-		$this->assertEqual("<fb:comments></fb:comments>",$results);
+		$this->assertEqual("<fb:comments></fb:comments>", $results);
 	}
 
-	function testInit() {
+	public function testInit() {
 		Configure::write('Facebook.appId', '12345');
 		$this->Facebook->Session->setReturnValue('read', '4567');
 		$results = $this->Facebook->init();
 		$expected = "<div id=\"fb-root\"></div><script type=\"text/javascript\">
 //<![CDATA[
-
-					window.fbAsyncInit = function() {
-						FB.init({
-							appId : '12345',
-							session : \"4567\", // don't refetch the session when PHP already has it
-							status : true, // check login status
-							cookie : true, // enable cookies to allow the server to access the session
-							xfbml : true // parse XFBML
-						});
-						// whenever the user logs in, we refresh the page
-						FB.Event.subscribe('auth.login', function() {
-							window.location.reload();
-						});
-					};
-					(function() {
-						var e = document.createElement('script');
-						e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-						e.async = true;
-						document.getElementById('fb-root').appendChild(e);
-					}());
-
+window.fbAsyncInit = function() {
+	FB.init({
+		appId : '12345',
+		session : \"4567\", // don't refetch the session when PHP already has it
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml : true // parse XFBML
+	});
+	// whenever the user logs in, we refresh the page
+	FB.Event.subscribe('auth.login', function() {
+		window.location.reload();
+	});
+};
+(function() {
+	var e = document.createElement('script');
+	e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+}());
 //]]>
 </script>";
 		$this->assertEqual($expected, $results);
 	}
 
-	function endTest() {
+	public function endTest() {
 		unset($this->Facebook);
 	}
 }

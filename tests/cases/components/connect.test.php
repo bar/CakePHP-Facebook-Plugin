@@ -7,26 +7,26 @@ App::import('Lib', 'Facebook.FB');
 
 class TestUser extends CakeTestModel {
 
-	var $name = 'TestUser';
-	var $data = null;
-	var $useDbConfig = 'test_suite';
-	var $useTable = false;
+	public $name = 'TestUser';
+	public $data = null;
+	public $useDbConfig = 'test_suite';
+	public $useTable = false;
 
-	function save($data){
+	public function save($data) {
 		$this->data = $data;
 		return true;
 	}
 
-	function hasField() {
+	public function hasField() {
 		return true;
 	}
 
-	function saveField($field,$facebook_id){
+	public function saveField($field,$facebook_id) {
 		$this->facebookId = $facebook_id;
 		return true;
 	}
 
-	function findByFacebookId($id){
+	public function findByFacebookId($id) {
 		$this->facebookId = $id;
 		return array();
 	}
@@ -34,30 +34,30 @@ class TestUser extends CakeTestModel {
 
 class TestUserHasOne extends CakeTestModel {
 
-	var $name = 'TestUser';
-	var $data = null;
-	var $useDbConfig = 'test_suite';
-	var $useTable = false;
+	public $name = 'TestUser';
+	public $data = null;
+	public $useDbConfig = 'test_suite';
+	public $useTable = false;
 
-	function save($data){
+	public function save($data) {
 		$this->data = $data;
 		return true;
 	}
 
-	function hasField() {
+	public function hasField() {
 		return true;
 	}
 
-	function field() {
+	public function field() {
 		return false;
 	}
 
-	function saveField($field,$facebook_id){
+	public function saveField($field,$facebook_id) {
 		$this->facebookId = $facebook_id;
 		return true;
 	}
 
-	function findByFacebookId($id){
+	public function findByFacebookId($id) {
 		$this->facebookId = $id;
 		return array(
 			'TestUserHasOne' => array(
@@ -72,26 +72,26 @@ class TestUserHasOne extends CakeTestModel {
 
 class TestUserError extends CakeTestModel {
 
-	var $name = 'TestUserError';
-	var $data = null;
-	var $useDbConfig = 'test_suite';
-	var $useTable = false;
+	public $name = 'TestUserError';
+	public $data = null;
+	public $useDbConfig = 'test_suite';
+	public $useTable = false;
 
-	function save($data){
+	public function save($data) {
 		$this->data = $data;
 		return true;
 	}
 
-	function hasField() {
+	public function hasField() {
 		return false;
 	}
 
-	function saveField($field,$facebook_id){
+	public function saveField($field,$facebook_id) {
 		$this->facebookId = $facebook_id;
 		return true;
 	}
 
-	function findByFacebookId($id){
+	public function findByFacebookId($id) {
 		$this->facebookId = $id;
 		return array();
 	}
@@ -99,24 +99,24 @@ class TestUserError extends CakeTestModel {
 
 class TestCallbackController extends Controller{
 
-	function beforeFacebookSave() {
+	public function beforeFacebookSave() {
 		return false;
 	}
 
-	function beforeFacebookLogin() {
+	public function beforeFacebookLogin() {
 		return false;
 	}
 
-	function afterFacebookLogin() {
+	public function afterFacebookLogin() {
 		return false;
 	}
 }
 
 class ConnectTest extends CakeTestCase {
 
-	var $Connect = null;
+	public $Connect = null;
 
-	function startTest() {
+	public function startTest() {
 		Mock::generate('AuthComponent');
 		Mock::generate('Controller');
 		Mock::generate('SessionComponent');
@@ -128,7 +128,7 @@ class ConnectTest extends CakeTestCase {
 		$this->Connect->FB = new MockFB();
 	}
 
-	function mockController($callback = false){
+	public function mockController($callback = false) {
 		if ($callback) {
 			Mock::generate('TestCallbackController');
 			$Controller = new MockTestCallbackController();
@@ -141,13 +141,13 @@ class ConnectTest extends CakeTestCase {
 		return $Controller;
 	}
 
-	function testInitialize() {
+	public function testInitialize() {
 		$this->Connect->initialize($this->Connect->Controller);
 		$this->assertFalse($this->Connect->me);
 		$this->assertFalse($this->Connect->uid);
 	}
 
-	function testBeforeLoginCallback() {
+	public function testBeforeLoginCallback() {
 		$this->Connect->Controller = $this->mockController(true);
 		$this->Connect->Controller->Auth->userModel = 'TestUser';
 		$this->Connect->session['uid'] = 12;
@@ -170,7 +170,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertTrue($this->Connect->hasAccount);
 	}
 
-	function testSaveHaultedByBeforeFacebookSave() {
+	public function testSaveHaultedByBeforeFacebookSave() {
 		$this->Connect->Controller = $this->mockController(true);
 		$this->Connect->Controller->Auth->userModel = 'TestUser';
 		$this->Connect->session['uid'] = 12;
@@ -182,12 +182,12 @@ class ConnectTest extends CakeTestCase {
 		$this->assertFalse($this->Connect->hasAccount);
 	}
 
-	function testFacebookSyncShouldDoNothingIfAuthIsNotDetected() {
+	public function testFacebookSyncShouldDoNothingIfAuthIsNotDetected() {
 		unset($this->Connect->Controller->Auth);
 		$this->assertFalse($this->Connect->__syncFacebookUser());
 	}
 
-	function testFacebookSyncShouldLoginAlreadyLinkedUser() {
+	public function testFacebookSyncShouldLoginAlreadyLinkedUser() {
 		$this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
 		$this->Connect->session['uid'] = 12;
 		$this->Connect->Controller->Auth->expectOnce('login', array(array(
@@ -201,7 +201,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertTrue($this->Connect->__syncFacebookUser());
 	}
 
-	function testFacebookSyncShouldUpdateTheFacebookIdIfNotFound() {
+	public function testFacebookSyncShouldUpdateTheFacebookIdIfNotFound() {
 		$this->Connect->Controller->Auth->userModel = 'TestUserHasOne';
 		$this->Connect->Controller->Auth->setReturnValue('user', 1);
 		$this->Connect->Controller->Auth->expectNever('login');
@@ -211,7 +211,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertEqual(12, $this->Connect->User->facebookId);
 	}
 
-	function testFacebookSyncShouldReturnFalseIfWeDontHaveFacebookIDInTable() {
+	public function testFacebookSyncShouldReturnFalseIfWeDontHaveFacebookIDInTable() {
 		$this->Connect->Controller->Auth->userModel = 'TestUserError';
 		$this->Connect->Controller->Auth->setReturnValue('user', 1);
 		$this->Connect->Controller->Auth->expectNever('login');
@@ -219,7 +219,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertEqual('Facebook.Connect handleFacebookUser Error. facebook_id not found in TestUserError table.', $this->Connect->errors[0]);
 	}
 
-	function testFacebookSyncShouldNotCreateUser() {
+	public function testFacebookSyncShouldNotCreateUser() {
 		$this->Connect->Controller->Auth->userModel = 'TestUser';
 		$this->Connect->session['uid'] = 12;
 		$this->Connect->createUser = false;
@@ -230,7 +230,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertFalse($this->Connect->hasAccount);
 	}
 
-	function testFacebookSyncShouldCreateUser() {
+	public function testFacebookSyncShouldCreateUser() {
 		$this->Connect->Controller->Auth->userModel = 'TestUser';
 		$this->Connect->session['uid'] = 12;
 		$this->Connect->Controller->Auth->setReturnValue('user', false);
@@ -240,7 +240,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertEqual(array('TestUser' => array('facebook_id' => 12, 'password' => 'password')), $this->Connect->User->data);
 	}
 
-	function testUserIfLoggedIn() {
+	public function testUserIfLoggedIn() {
 		$this->Connect->me = array('email' => 'test@example.com', 'id' => '12');
 
 		$results = $this->Connect->user();
@@ -253,7 +253,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertEqual('12', $results);
 	}
 
-	function testUserIfLoggedOut() {
+	public function testUserIfLoggedOut() {
 		$this->Connect->me = null;
 
 		$results = $this->Connect->user();
@@ -266,7 +266,7 @@ class ConnectTest extends CakeTestCase {
 		$this->assertEqual(null, $results);
 	}
 
-	function endTest() {
+	public function endTest() {
 		unset($this->Connect);
 	}
 }

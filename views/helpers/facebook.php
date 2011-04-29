@@ -13,26 +13,24 @@ class FacebookHelper extends AppHelper {
 /**
  * Helpers to load with this helper.
  */
-	var $helpers = array('Html', 'Session');
+	public $helpers = array('Html', 'Session');
 
 /**
  * Default Facebook.Share javascript URL
- * @access private
  */
-	var $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
+	private $__fbShareScript = 'http://static.ak.fbcdn.net/connect.php/js/FB.Share';
 
 /**
  * locale, settable in the constructor
  * @link http://developers.facebook.com/docs/internationalization/
- * @access public
  */
-	var $locale = null;
+	public $locale = null;
 
 /**
  * Loadable construct, pass in locale settings
  * Fail safe locale to 'en_US'
  */
-	function __construct($settings = array()) {
+	public function __construct($settings = array()) {
 		$this->_set($settings);
 
 		if (!$this->locale) {
@@ -54,7 +52,7 @@ class FacebookHelper extends AppHelper {
  * - 'license' => License Info
  * @return string plugin version
  */
-	function info($name = 'version') {
+	public function info($name = 'version') {
 		if (FacebookInfo::_isAvailable($name)) {
 			return FacebookInfo::$name();
 		} else {
@@ -66,16 +64,15 @@ class FacebookHelper extends AppHelper {
  * Loaoder is no longer needed and is now deprecated
  * @return null
  */
-	function loader() {
+	public function loader() {
 		return null;
 	}
 
 /**
  * HTML XMLNS tag (required)
  * @return string of html header
- * @access public
  */
-	function html() {
+	public function html() {
 		return '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">';
 	}
 
@@ -88,9 +85,8 @@ class FacebookHelper extends AppHelper {
  * - max-rows int The maximum number of rows of profile pictures to show
  * - perms list of permissions to ask for when logging in separated by commas (eg: 'email,read_stream,publish_stream'). (http://developers.facebook.com/docs/authentication/permissions)
  * @return string XFBML tag
- * @access public
  */
-	function login($options = array()) {
+	public function login($options = array()) {
 		return $this->__fbTag('fb:login-button', '', $options);
 	}
 
@@ -103,9 +99,8 @@ class FacebookHelper extends AppHelper {
  * - confirm string Alert dialog which will be visible if user clicks on the button/link
  * - custom used to create custom link instead of standart fbml. if redirect option is set this one is not required.
  * @return string XFBML tag for logout button
- * @access public
  */
-	function logout($options = array()) {
+	public function logout($options = array()) {
 		$options = array_merge(
 			array(
 				'autologoutlink' => 'true',
@@ -140,9 +135,8 @@ class FacebookHelper extends AppHelper {
  * - label string of text to use in link (default logout)
  * - confirm string Alert dialog which will be visible if user clicks on the button/link
  * @return string Link for disconnect button
- * @access public
  */
-	function disconnect($options = array()) {
+	public function disconnect($options = array()) {
 		$options = array_merge(
 			array(
 				'label' => 'logout'
@@ -171,9 +165,8 @@ class FacebookHelper extends AppHelper {
  * - anchor: a href anchor name (default 'fb_share')
  * - fbxml: true or false. If true, use fb:share-button xml style instead of javascript share (default false)
  * @return string XFBML tag along with shareJs script
- * @access public
  */
-	function share($url = null, $options = array()) {
+	public function share($url = null, $options = array()) {
 		// @todo this can be improved using the router
 		if (!$url) $url = env('SERVER_NAME') . $this->here;
 		$defaults = array(
@@ -185,17 +178,25 @@ class FacebookHelper extends AppHelper {
 		$options = array_merge($defaults, $options);
 
 		if (!$options['fbxml']) {
-			switch($options['style']) {
-			case 'link': $options['type'] = 'icon_link'; break;
-				default: $options['type'] = 'button'; break;
+			switch ($options['style']) {
+				case 'link':
+					$options['type'] = 'icon_link';
+					break;
+				default:
+					$options['type'] = 'button';
+					break;
 			}
 		}
 
 		if ($options['fbxml']) {
 			unset($options['fbxml']);
-			$retval = $this->__fbTag('fb:share-button','',$options);
+			$retval = $this->__fbTag('fb:share-button', '', $options);
 		} else {
-			$retval = $this->Html->link($options['label'], 'http://www.facebook.com/sharer.php', array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor']));
+			$retval = $this->Html->link(
+				$options['label'],
+				'http://www.facebook.com/sharer.php',
+				array('share_url' => $url, 'type' => $options['type'], 'name' => $options['anchor'])
+			);
 			$retval .= $this->Html->script($this->__fbShareScript);
 		}
 
@@ -213,9 +214,8 @@ class FacebookHelper extends AppHelper {
  * - width: width of the picture in pixels
  * - height: height of the picture in pixels
  * @return string fb tag for profile picture or empty string if uid is not present
- * @access public
  */
-	function picture($uid = null, $options = array()) {
+	public function picture($uid = null, $options = array()) {
 		$options = array_merge(
 			array(
 				'uid' => $uid,
@@ -226,7 +226,7 @@ class FacebookHelper extends AppHelper {
 		if ($options['uid']) {
 			return $this->__fbTag('fb:profile-pic', '', $options);
 		} else {
-			return "";
+			return '';
 		}
 	}
 
@@ -241,7 +241,7 @@ class FacebookHelper extends AppHelper {
  * - connections : number of connections to show (default 10)
  * - colorscheme : dark | light (default light)
  */
-	function likebox($url = null, $options = array()) {
+	public function likebox($url = null, $options = array()) {
 		$options = array_merge(
 			array(
 				'href' => $url,
@@ -264,9 +264,8 @@ class FacebookHelper extends AppHelper {
  * - logobar : 1 turns logobar on, 0 turns logobar off (default 0)
  * - profile_id : Your Application Id (default Configure::read('Facebook.app_id')
  * @return string xfbhtml tag
- * @access public
  */
-	function fanbox($options = array()) {
+	public function fanbox($options = array()) {
 		$options = array_merge(
 			array(
 				'profile_id' => FacebookInfo::getConfig('appId'),
@@ -288,9 +287,8 @@ class FacebookHelper extends AppHelper {
  * - width : width of window in pixels
  * - height: height of window in pixels
  * @return string xfbhtml tag
- * @access public
  */
-	function livestream($options = array()) {
+	public function livestream($options = array()) {
 		$options = array_merge(
 			array(
 				'event_app_id' => FacebookInfo::getConfig('appId'),
@@ -300,7 +298,7 @@ class FacebookHelper extends AppHelper {
 			),
 			$options
 		);
-		return $this->__fbTag('fb:live-stream','',$options);
+		return $this->__fbTag('fb:live-stream', '', $options);
 	}
 
 /**
@@ -310,9 +308,8 @@ class FacebookHelper extends AppHelper {
  * - numposts : number of posts to show (default 10)
  * - width : int width of comments blog (default 550)
  * @return string xfbhtml tag
- * @access public
  */
-	function comments($options = array()) {
+	public function comments($options = array()) {
 		return $this->__fbTag('fb:comments', '', $options);
 	}
 
@@ -327,9 +324,8 @@ class FacebookHelper extends AppHelper {
  * - font : default arial
  * - bordercolor : color of border (black, white, grey)
  * @return string xfbhtml tag
- * @access public
  */
-	function recommendations($options = array()) {
+	public function recommendations($options = array()) {
 		return $this->__fbTag('fb:recommendations', '', $options);
 	}
 
@@ -340,9 +336,8 @@ class FacebookHelper extends AppHelper {
  * - numrows : int of rows object (default 1)
  * - width : int width of object (default 300)
  * @return string xfbhtml tag
- * @access public
  */
-	function friendpile($options = array()) {
+	public function friendpile($options = array()) {
 		return $this->__fbTag('fb:friendpile', '', $options);
 	}
 
@@ -358,9 +353,8 @@ class FacebookHelper extends AppHelper {
  * - bordercolor : color of border (black, white, grey)
  * - recommendations : show recommendations default "false"
  * @return string xfbhtml tag
- * @access public
  */
-	function activity($options = array()) {
+	public function activity($options = array()) {
 		return $this->__fbTag('fb:activity', '', $options);
 	}
 
@@ -375,9 +369,8 @@ class FacebookHelper extends AppHelper {
  * - action : the title of the action (like or recommend, default: like)
  * - colorscheme : the look of the button (dark or light, default: light)
  * @return string xfbhtml tag
- * @access public
  */
-	function like($options = array()) {
+	public function like($options = array()) {
 		return $this->__fbTag('fb:like', '', $options);
 	}
 
@@ -386,37 +379,35 @@ class FacebookHelper extends AppHelper {
  * @param array of options
  * @example $this->Facebook->init();
  * @return string of scriptBlock for FB.init() or error
- * @access public
  */
-	function init($options = array()) {
+	public function init($options = array()) {
 		if (FacebookInfo::getConfig('appId')) {
 			$appId = FacebookInfo::getConfig('appId');
 			$session = json_encode($this->Session->read('FB.Session'));
 			$init = '<div id="fb-root"></div>';
 			$init .= $this->Html->scriptBlock(
-				"
-				window.fbAsyncInit = function() {
-					FB.init({
-						appId : '{$appId}',
-						session : {$session}, // don't refetch the session when PHP already has it
-						status : true, // check login status
-						cookie : true, // enable cookies to allow the server to access the session
-						xfbml : true // parse XFBML
-					});
-					// whenever the user logs in, we refresh the page
-					FB.Event.subscribe('auth.login', function() {
-						window.location.reload();
-					});
-				};
-				(function() {
-					var e = document.createElement('script');
-					e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
-					e.async = true;
-					document.getElementById('fb-root').appendChild(e);
-				}());
-				",
-				$options
-			);
+<<<JS
+window.fbAsyncInit = function() {
+	FB.init({
+		appId : '{$appId}',
+		session : {$session}, // don't refetch the session when PHP already has it
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml : true // parse XFBML
+	});
+	// whenever the user logs in, we refresh the page
+	FB.Event.subscribe('auth.login', function() {
+		window.location.reload();
+	});
+};
+(function() {
+	var e = document.createElement('script');
+	e.src = document.location.protocol + '//connect.facebook.net/{$this->locale}/all.js';
+	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+}());
+JS
+			,$options);
 			return $init;
 		} else {
 			return "<span class='error'>No Facebook configuration detected. Please add the facebook configuration file to your config folder.</span>";
@@ -428,7 +419,6 @@ class FacebookHelper extends AppHelper {
  * @param string fb:tag
  * @param string label to pass inbetween the tag
  * @param array of options as name=>value pairs to add to facebook tag attribute
- * @access private
  */
 	private function __fbTag($tag, $label, $options) {
 		//TODO make this a little nicer, pron to errors if a value has a ' in it.
