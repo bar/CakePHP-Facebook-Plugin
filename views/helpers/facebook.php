@@ -167,8 +167,9 @@ class FacebookHelper extends AppHelper {
  * @return string XFBML tag along with shareJs script
  */
 	public function share($url = null, $options = array()) {
-		// @todo this can be improved using the router
-		if (!$url) $url = env('SERVER_NAME') . $this->here;
+		if (empty($url)) {
+			$url = Router::url(null, true);
+		}
 		$defaults = array(
 			'style' => 'button',
 			'label' => 'share',

@@ -92,13 +92,14 @@ class FacebookHelperTest extends CakeTestCase {
 		$this->assertEqual('<a href="#" onclick="FB.logout(function(response){window.location = &#039;/users/logout&#039;});">Sign Out</a>', $results);
 	}
 
+/**
+ * @TODO Test Facebook->share() forcing Router to return 'http://www.example.com/some_where' when called as Router(null, true)
+ */
 	public function testShare() {
-		$this->Facebook->here = 'some_where';
+		$results = $this->Facebook->share('http://www.example.com/some_where');
+		$this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="http://www.example.com/some_where" type="button" name="fb_share">share</a><script type="text/javascript" src="http://static.ak.fbcdn.net/connect.php/js/FB.Share"></script>', $results);
 
-		$results = $this->Facebook->share();
-		$this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="some_where" type="button" name="fb_share">share</a><script type="text/javascript" src="http://static.ak.fbcdn.net/connect.php/js/FB.Share"></script>', $results);
-
-		//assert the script isn't loaded again on next call
+		// Assert the script isn't loaded again on next call
 		$results = $this->Facebook->share('not_here');
 		$this->assertEqual('<a href="http://www.facebook.com/sharer.php" share_url="not_here" type="button" name="fb_share">share</a>', $results);
 
