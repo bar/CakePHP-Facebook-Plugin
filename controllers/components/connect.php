@@ -76,7 +76,7 @@ class ConnectComponent extends Object {
 	public function startup(&$Controller) {
 		// Prevent using Auth component only if there is noAuth setting provided
 		if (!$this->noAuth && !empty($this->session['uid'])) {
-			$this->_syncFacebookUser();
+			$this->syncFacebookUser();
 		}
 	}
 
@@ -94,7 +94,7 @@ class ConnectComponent extends Object {
  *
  * @return boolean True if successful, false otherwise.
  */
-	protected function _syncFacebookUser() {
+	public function syncFacebookUser() {
 		if (empty($this->session['uid']) || !isset($this->Controller->Auth)) {
 			return false;
 		}
