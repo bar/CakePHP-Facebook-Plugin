@@ -17,11 +17,8 @@ class FB {
 	public static $Facebook = null;
 
 	public function __construct() {
-		if (!self::$Facebook) {
-			FacebookInfo::getConfig();
-			self::$Facebook = new Facebook(
-				FacebookInfo::$configs
-			);
+		if (empty(self::$Facebook)) {
+			self::$Facebook = new Facebook(FacebookInfo::getConfig());
 		}
 	}
 

@@ -121,11 +121,11 @@ class ConnectTest extends CakeTestCase {
 
 	public $Connect = null;
 
-	/**
-	 * Used to test complex protected methods
-	 * @link http://stackoverflow.com/questions/105007/do-you-test-private-method
-	 * @link http://stackoverflow.com/questions/249664/best-practices-to-test-protected-methods-with-phpunit
-	 */
+/**
+ * Used to test complex protected methods
+ * @link http://stackoverflow.com/questions/105007/do-you-test-private-method
+ * @link http://stackoverflow.com/questions/249664/best-practices-to-test-protected-methods-with-phpunit
+ */
 	protected static function getMethod($class, $name) {
 		$reflectionClass = new ReflectionClass($class);
 		$method = $reflectionClass->getMethod($name);

@@ -26,23 +26,23 @@ class FacebookInfo {
 	public static $configs = array();
 
 /**
- * Testing getting a configuration option.
+ * Get configuration.
+ * If $key is given, try to return Facebook.$key by any means, setting self:$configs[$key] in the process.
+ * If no $key is given, try to return the whole configuration (used to construct FB class).
  * @param key to search for
  * @return mixed result of configuration key.
  */
 	public static function getConfig($key = null) {
-		if (isset(self::$configs[$key])) {
-			return self::$configs[$key];
+		if (!empty($key)) {
+			if (isset(self::$configs[$key]) || (self::$configs[$key] = Configure::read("Facebook.$key"))) {
+				return self::$configs[$key];
+			} elseif (Configure::load('facebook') && (self::$configs[$key] = Configure::read("Facebook.$key"))) {
+				return self::$configs[$key];
+			}
+		} else {
+			Configure::load('facebook');
+			return Configure::read('Facebook');
 		}
-		if (self::$configs[$key] = Configure::read("Facebook.$key")) {
-			return self::$configs[$key];
-		}
-		Configure::load('facebook');
-		self::$configs = Configure::read('Facebook');
-		if (self::$configs[$key] = Configure::read("Facebook.$key")) {
-			return self::$configs[$key];
-		}
-
 		return null;
 	}
 

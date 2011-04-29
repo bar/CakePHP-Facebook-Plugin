@@ -247,6 +247,7 @@ window.fbAsyncInit = function() {
 
 	public function endTest() {
 		unset($this->Facebook);
+		FacebookInfo::$configs = null;
 		Configure::delete('Facebook');
 	}
 }
