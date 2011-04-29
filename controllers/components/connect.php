@@ -51,76 +51,97 @@ class ConnectComponent extends Object {
 	public $createUser = true;
 
 /**
- * Initialize, load the api, decide if we're logged in
- * Sync the connected Facebook user with your application
+ * Initialize, load the api, decide if we're logged in.
+ *
  * @param Controller object to attach to
  * @param settings for Connect
  * @return void
  */
 	public function initialize(&$Controller, $settings = array()) {
-		$this->Controller = $Controller;
+		$this->Controller =& $Controller;
 		$this->_set($settings);
 		$this->FB = new FB();
 		$this->session = $this->FB->getSession();
-		//Prevent using Auth component only if there is noAuth setting provided
-		if (!$this->noAuth && isset($this->session['uid'])) {
-			$this->__syncFacebookUser(); //Attempt to authenticate user using Facebook. Currently the uid is fetched from $this->session['uid']
+	}
+
+/**
+ * Sync the connected Facebook user with your application.
+ *
+ * Attempt to authenticate user using Facebook.
+ * Currently the uid is fetched from $this->session['uid'].
+ *
+ * @param Controller object to attach to
+ * @return void
+ */
+	public function startup(&$Controller) {
+		// Prevent using Auth component only if there is noAuth setting provided
+		if (!$this->noAuth && !empty($this->session['uid'])) {
+			$this->_syncFacebookUser();
 		}
 	}
 
 /**
- * Sync the connected Facebook user
- * @return boolean true if successful, false otherwise
- * @access protected
+ * Sync the connected Facebook user.
+ *
+ * If User is logged in:
+ *  a. but doesn't have a facebook account associated, try to associate it.
+ *
+ * If User is not logged in:
+ *  b. but have a facebook account associated, try to log the user in.
+ *  c. and doesn't have a facebook account associated,
+ *    1. try to automatically create an account and associate it (if $this->createUser).
+ *    2. try to log the user in, afterwards.
+ *
+ * @return boolean True if successful, false otherwise.
  */
-	public function __syncFacebookUser() {
-		if (!isset($this->Controller->Auth)) {
+	protected function _syncFacebookUser() {
+		if (empty($this->session['uid']) || !isset($this->Controller->Auth)) {
 			return false;
 		}
-		// set Auth to a convenience variable
-		$Auth = $this->Controller->Auth;
 		if (!$this->__initUserModel()) {
 			return false;
 		}
-		// if you don't have a facebook_id field in your user table, throw an error
+		$Auth = $this->Controller->Auth;
 		if (!$this->User->hasField('facebook_id')) {
 			$this->__error("Facebook.Connect handleFacebookUser Error. facebook_id not found in {$Auth->userModel} table.");
 			return false;
 		}
 
-		// check if the user already has an account
-		// User is logged in but doesn't have a
 		if ($Auth->user()) {
 			$this->hasAccount = true;
 			$this->User->id = $Auth->user($this->User->primaryKey);
-			if (!$this->User->field('facebook_id')) {
-				$this->User->saveField('facebook_id', $this->session['uid']);
+			if ($this->User->field('facebook_id') == false) {
+				return (boolean) $this->User->saveField('facebook_id', $this->session['uid']);
 			}
-			return true;
+
 		} else {
 			$this->authUser = $this->User->findByFacebookId($this->session['uid']);
 
 			if (!empty($this->authUser)) {
 				$this->hasAccount = true;
-			} elseif (empty($this->authUser) && $this->createUser) {
-				$this->authUser[$this->User->alias]['facebook_id'] = $this->session['uid'];
-				$this->authUser[$this->User->alias][$Auth->fields['password']] = $Auth->password(FacebookInfo::randPass());
+			} elseif ($this->createUser) {
+				$this->authUser[$this->User->alias] = array(
+					'facebook_id' => $this->session['uid'],
+					$Auth->fields['password'] => $Auth->password(FacebookInfo::randPass())
+				);
 				if ($this->__runCallback('beforeFacebookSave')) {
-					$this->hasAccount = ($this->User->save($this->authUser, array('validate' => false)));
+					$this->hasAccount = (boolean) $this->User->save($this->authUser, array('validate' => false));
 				} else {
 					$this->authUser = null;
 				}
 			}
 
-			if ($this->authUser) {
+			if (!empty($this->authUser)) {
 				$this->__runCallback('beforeFacebookLogin', $this->authUser);
 				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);
 				if ($Auth->login($this->authUser)) {
 					$this->__runCallback('afterFacebookLogin');
+					return true;
 				}
 			}
-			return true;
 		}
+
+		return false;
 	}
 
 /**
