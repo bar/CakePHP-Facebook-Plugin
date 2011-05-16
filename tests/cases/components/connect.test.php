@@ -168,6 +168,7 @@ class ConnectTest extends CakeTestCase {
 				'password' => 'password'
 			)
 		)));
+		$this->Connect->Controller->setReturnValue('beforeFacebookLogin', true);
 		$this->Connect->Controller->Auth->expectOnce('login', array(array(
 			'TestUser' => array(
 				'facebook_id' => 12,
@@ -254,6 +255,7 @@ class ConnectTest extends CakeTestCase {
 				'password' => 'password'
 			)
 		)));
+		$this->Connect->Controller->setReturnValue('beforeFacebookLogin', true);
 		$this->Connect->Controller->Auth->expectOnce('login', array(array(
 			'TestUser' => array(
 				'facebook_id' => 12,

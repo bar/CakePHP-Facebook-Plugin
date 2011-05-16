@@ -131,8 +131,7 @@ class ConnectComponent extends Object {
 				}
 			}
 
-			if (!empty($this->authUser)) {
-				$this->__runCallback('beforeFacebookLogin', $this->authUser);
+			if (!empty($this->authUser) && $this->__runCallback('beforeFacebookLogin', $this->authUser)) {
 				$Auth->fields = array('username' => 'facebook_id', 'password' => $Auth->fields['password']);
 				if ($Auth->login($this->authUser)) {
 					$this->__runCallback('afterFacebookLogin');
